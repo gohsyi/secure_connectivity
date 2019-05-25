@@ -5,22 +5,25 @@ import logging
 
 from contextlib import contextmanager
 
+from common.argparser import abstract
 
-def get_logger(folder, name):
+
+def get_logger(name, folder=os.path.join('logs', abstract)):
     """
     get a logger with std output and file output
     :param folder: logger folder
     :param name: logger name
     :return: logger
     """
+
     if not os.path.exists(folder):
         os.mkdir(folder)
 
     if name in logging.Logger.manager.loggerDict:
         return logging.getLogger(name)
 
-    if os.path.exists(os.path.join('logs', '{}.log'.format(name))):
-        os.remove(os.path.join('logs', '{}.log'.format(name)))
+    if os.path.exists(os.path.join(folder, '{}.log'.format(name))):
+        os.remove(os.path.join(folder, '{}.log'.format(name)))
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)

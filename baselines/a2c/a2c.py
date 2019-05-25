@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import losses
 
 
-from common.argparser import args
+from common.argparser import args, abstract
 from common.util import get_logger
 
 from baselines.common import tf_util
@@ -47,7 +47,7 @@ class Model(object):
         sess = tf_util.get_session()
 
         # output to both file and console
-        logger = get_logger('logs', name)
+        logger = get_logger(name)
         output = logger.info
 
         activation = tf_util.get_activation(activation)
@@ -207,7 +207,7 @@ def learn(
         name='defender',
         env=env,
         lr=lr,
-        latents=args.hidsizes,
+        latents=args.latents,
         activation=args.activation,
         optimizer=args.optimizer,
         vf_coef=vf_coef,
@@ -220,7 +220,7 @@ def learn(
         name='attacker',
         env=env,
         lr=lr,
-        latents=args.hidsizes,
+        latents=args.latents,
         activation=args.activation,
         optimizer=args.optimizer,
         vf_coef=vf_coef,
