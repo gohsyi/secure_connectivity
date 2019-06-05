@@ -7,7 +7,7 @@ import numpy as np
 
 
 class SmoothPlot():
-    def __init__(self, smooth_rate=0.6):
+    def __init__(self, smooth_rate=0.9):
         self.smooth_rate = smooth_rate
         self.colors = ['r', 'g', 'b', 'c']
 
