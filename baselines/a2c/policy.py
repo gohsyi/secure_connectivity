@@ -24,7 +24,7 @@ class Policy(object):
         action = sample_k(logits, n_actions)
 
         vf_latent = layers.mlp(observations, vf_latents, activation)
-        vf = tf.squeeze(layers.dense(vf_latent, 1), -1)
+        vf = tf.squeeze(layers.dense(vf_latent, 1, activation), -1)
 
         def neglogp():
             return tf.nn.softmax_cross_entropy_with_logits_v2(
@@ -50,6 +50,7 @@ class Policy(object):
 def build_policy(observations, act_size, n_actions, latents, vf_latents, activation=None):
     """
     build a policy with given params
+    ------
     :param observations:
     :param act_size:
     :param latents:
