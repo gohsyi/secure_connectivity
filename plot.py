@@ -1,16 +1,13 @@
 import os
 import argparse
-import numpy as np
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-plt.style.use("ggplot")
-
+from common.plot import SmoothPlot
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-smooth', type=float, default=0)
+parser.add_argument('-smooth_rate', type=float, default=0.6)
 args = parser.parse_args()
+
+plt = SmoothPlot(args.smooth_rate)
 
 
 for root, dirs, files in os.walk('logs'):
@@ -38,26 +35,30 @@ for root, dirs, files in os.walk('logs'):
                         val.append(float(x[1]))
 
             if len(pg_loss) > 0:
-                plt.plot(pg_loss)
-                plt.title('policy gradient loss')
-                plt.savefig('.'.join(p.split('.')[:-1]) + '_pg_loss.jpg')
-                plt.cla()
+                plt.plot(
+                    pg_loss,
+                    title='policy gradient loss',
+                    save_path='.'.join(p.split('.')[:-1]) + '_pg_loss.jpg',
+                )
 
             if len(vf_loss) > 0:
-                plt.plot(vf_loss)
-                plt.title('value function loss')
-                plt.savefig('.'.join(p.split('.')[:-1]) + '_vf_loss.jpg')
-                plt.cla()
+                plt.plot(
+                    vf_loss,
+                    title='value function loss',
+                    save_path='.'.join(p.split('.')[:-1]) + '_vf_loss.jpg',
+                )
 
             if len(ent_loss) > 0:
-                plt.plot(ent_loss)
-                plt.title('entropy loss')
-                plt.savefig('.'.join(p.split('.')[:-1]) + '_ent_loss.jpg')
-                plt.cla()
+                plt.plot(
+                    ent_loss,
+                    title='entropy loss',
+                    save_path='.'.join(p.split('.')[:-1]) + '_ent_loss.jpg',
+                )
 
             if len(rew) > 0 and len(val) > 0:
-                plt.plot(rew, label='reward')
-                plt.plot(val, label='value')
-                plt.title('reward and value')
-                plt.savefig('.'.join(p.split('.')[:-1]) + '_rew_val.jpg')
-                plt.cla()
+                plt.plot(
+                    [rew, val],
+                    label=['reward', 'value'],
+                    title='reward and value',
+                    save_path='.'.join(p.split('.')[:-1]) + '_rew_val.jpg',
+                )
