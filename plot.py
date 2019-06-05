@@ -4,7 +4,9 @@ import argparse
 from common.plot import SmoothPlot
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument('-smooth_rate', type=float, default=0.6)
+
 args = parser.parse_args()
 
 plt = SmoothPlot(args.smooth_rate)

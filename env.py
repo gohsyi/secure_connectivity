@@ -66,13 +66,16 @@ class Env(object):
         pre_connections = self.connections()
 
         d_action, a_action = action
+        d_action = np.argwhere(d_action==1)
+        a_action = np.argwhere(a_action==1)
+
         for aa in a_action:
             if aa not in d_action:
-                i, j = self.map[aa]
+                i, j = self.map[int(aa)]
                 self.adj_mat[i][j] = 0
 
         # defender_rew = 1 if self.is_connected() else -1
-        defender_rew = (self.connections() - pre_connections) / self.n  # normalize -> [-1, 0]
+        defender_rew = (self.connections() - pre_connections) / (self.n - 1)  # normalize -> [-1, 0]
 
         return self.gen_connected_graph(), defender_rew, True, None
 
