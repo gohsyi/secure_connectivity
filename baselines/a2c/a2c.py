@@ -131,7 +131,7 @@ class Model(object):
                 td_map
             )
 
-            if (ep + 1) % log_interval == 0:
+            if ep % log_interval == 0:
                 avg_rewards = float(np.mean(rewards))
                 avg_values = float(np.mean(values))
                 avg_advs = float(np.mean(advs))

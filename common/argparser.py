@@ -34,6 +34,7 @@ parser.add_argument('-n_vertices', type=int, default=10)
 parser.add_argument('-n_edges', type=int, default=60)
 parser.add_argument('-n_actions', type=int, default=10)
 
+parser.add_argument('-note', type=str, default='test')
 parser.add_argument('-load_paths', type=str, default='')
 
 args = parser.parse_args()
