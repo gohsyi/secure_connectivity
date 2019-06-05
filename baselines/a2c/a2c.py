@@ -54,12 +54,12 @@ class Model(object):
         activation = tf_util.get_activation(activation)
         optimizer = tf_util.get_optimizer(optimizer)
 
-        lr = tf.train.polynomial_decay(
-            learning_rate=lr,
-            global_step=tf.train.get_or_create_global_step(),
-            decay_steps=total_epoches,
-            end_learning_rate=lr/10,
-        )
+        # lr = tf.train.polynomial_decay(
+        #     learning_rate=lr,
+        #     global_step=tf.train.get_or_create_global_step(),
+        #     decay_steps=total_epoches,
+        #     end_learning_rate=lr/10,
+        # )
 
         ob_size = env.ob_size
         act_size = env.act_size
