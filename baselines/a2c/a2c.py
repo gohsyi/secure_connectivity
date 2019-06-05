@@ -5,7 +5,7 @@ import tensorflow as tf
 from tensorflow import losses
 
 
-from common.argparser import args, abstract
+from common.argparser import args
 from common.util import get_logger
 
 from baselines.common import tf_util
@@ -150,88 +150,68 @@ class Model(object):
         tf.global_variables_initializer().run(session=sess)
 
 
-def learn(
-    env,
-    seed=None,
-    nsteps=5,
-    total_epoches=int(80e6),
-    vf_coef=0.5,
-    ent_coef=0.01,
-    max_grad_norm=0.5,
-    lr=7e-4,
-    gamma=0.99,
-    log_interval=1,
-    load_paths=None):
-
-    '''
-    Main entrypoint for A2C algorithm. Train a policy with given network architecture on a given environment using a2c algorithm.
-
-    Parameters:
-    -----------
-
-    network:            policy network architecture. Either string (mlp, lstm, lnlstm, cnn_lstm, cnn, cnn_small, conv_only - see baselines.common/models.py for full list)
-                        specifying the standard network architecture, or a function that takes tensorflow tensor as input and returns
-                        tuple (output_tensor, extra_feed) where output tensor is the last network layer output, extra_feed is None for feed-forward
-                        neural nets, and extra_feed is a dictionary describing how to feed state into the network for recurrent neural nets.
-                        See baselines.common/policies.py/lstm for more details on using recurrent nets in policies
-
-
-    env:                RL environment. Should implement interface similar to VecEnv (baselines.common/vec_env) or be wrapped with DummyVecEnv (baselines.common/vec_env/dummy_vec_env.py)
-
-    seed:               seed to make random number sequence in the alorightm reproducible. By default is None which means seed from system noise generator (not reproducible)
-
-    nsteps:             int, number of steps of the vectorized environment per update (i.e. batch size is nsteps * nenv where
-                        nenv is number of environment copies simulated in parallel)
-
-    total_epoches:      int, total number of epoches to train on (default: 80M)
-
-    vf_coef:            float, coefficient in front of value function loss in the total loss function (default: 0.5)
-
-    ent_coef:           float, coeffictiant in front of the policy entropy in the total loss function (default: 0.01)
-
-    max_gradient_norm:  float, gradient is clipped to have global L2 norm no more than this value (default: 0.5)
-
-    lr:                 float, learning rate (default: 7e-4)
-
-    gamma:              float, reward discounting parameter (default: 0.99)
-
-    log_interval:       int, specifies how frequently the logs are printed out (default: 100)
-
-    '''
-
+def learn(env,
+          defender,
+          attacker,
+          seed=None,
+          nsteps=5,
+          total_epoches=int(1e6),
+          vf_coef=0.5,
+          ent_coef=0.01,
+          max_grad_norm=0.5,
+          lr=7e-4,
+          gamma=0.99,
+          log_interval=1,
+          load_paths=None):
 
     set_global_seeds(seed)
 
+    from baselines.stochastic.stochastic import Stochastic
+
     # Instantiate the model objects (that creates defender_model and adversary_model)
-    d_model = Model(
-        name='defender',
-        env=env,
-        lr=lr,
-        latents=args.latents,
-        activation=args.activation,
-        optimizer=args.optimizer,
-        vf_coef=vf_coef,
-        ent_coef=ent_coef,
-        max_grad_norm=max_grad_norm,
-        total_epoches=total_epoches,
-        log_interval=log_interval)
+    if defender == 'a2c':
+        d_model = Model(
+            name='defender',
+            env=env,
+            lr=lr,
+            latents=args.latents,
+            activation=args.activation,
+            optimizer=args.optimizer,
+            vf_coef=vf_coef,
+            ent_coef=ent_coef,
+            max_grad_norm=max_grad_norm,
+            total_epoches=total_epoches,
+            log_interval=log_interval)
 
-    a_model = Model(
-        name='attacker',
-        env=env,
-        lr=lr,
-        latents=args.latents,
-        activation=args.activation,
-        optimizer=args.optimizer,
-        vf_coef=vf_coef,
-        ent_coef=ent_coef,
-        max_grad_norm=max_grad_norm,
-        total_epoches=total_epoches,
-        log_interval=log_interval)
+    elif defender == 'stochastic':
+        d_model = Stochastic(env)
 
-    if load_paths is not None:
-        d_model.load(load_paths[0])
-        a_model.load(load_paths[1])
+    else:
+        raise NotImplementedError
+
+    if attacker == 'a2c':
+        a_model = Model(
+            name='attacker',
+            env=env,
+            lr=lr,
+            latents=args.latents,
+            activation=args.activation,
+            optimizer=args.optimizer,
+            vf_coef=vf_coef,
+            ent_coef=ent_coef,
+            max_grad_norm=max_grad_norm,
+            total_epoches=total_epoches,
+            log_interval=log_interval)
+
+    elif attacker == 'stochastic':
+        a_model = Stochastic(env)
+
+    else:
+        raise NotImplementedError
+
+    # if load_paths is not None:
+    #     d_model.load(load_paths[0])
+    #     a_model.load(load_paths[1])
 
     # Instantiate the runner object
     runner = Runner(env, d_model, a_model, nsteps=nsteps, gamma=gamma)

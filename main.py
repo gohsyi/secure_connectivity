@@ -14,14 +14,18 @@ if __name__ == '__main__':
 
     d_model, a_model = learn(
         env=env,
-        seed=None,
+        defender=args.d_model,
+        attacker=args.a_model,
+        seed=args.seed,
         nsteps=args.batchsize,
-        total_epoches=int(80e6),
-        vf_coef=0.5,
-        ent_coef=0.01,
-        max_grad_norm=0.5,
-        lr=1e-4,
-        gamma=0.99,
-        log_interval=100,
-        load_paths=None
+        total_epoches=args.total_epoches,
+        vf_coef=args.vf_coef,
+        ent_coef=args.ent_coef,
+        max_grad_norm=args.max_grad_norm,
+        lr=args.lr,
+        gamma=args.gamma,
+        log_interval=args.log_interval,
+        load_paths=args.load_paths,
     )
+
+

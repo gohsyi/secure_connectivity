@@ -10,7 +10,8 @@ parser.add_argument('-gpu', type=str, default='-1')
 parser.add_argument('-seed', type=int, default=0)
 
 # algorithm setting
-parser.add_argument('-model', type=str, default='a2c')
+parser.add_argument('-d_model', type=str, default='a2c')
+parser.add_argument('-a_model', type=str, default='a2c')
 
 # experiment setting
 parser.add_argument('-lr', type=float, default=1e-4)
@@ -20,6 +21,8 @@ parser.add_argument('-latents', type=str, default='256')
 parser.add_argument('-total_epoches', type=int, default=int(1e5))
 parser.add_argument('-vf_coef', type=float, default=0.1)
 parser.add_argument('-ent_coef', type=float, default=0.01)
+parser.add_argument('-gamma', type=float, default=0.99)
+parser.add_argument('-log_interval', type=int, default=10)
 parser.add_argument('-max_grad_norm', type=float, default=0.5)
 parser.add_argument('-activation', type=str, default='relu',
                     help='relu/sigmoid/elu/tanh')
@@ -28,13 +31,16 @@ parser.add_argument('-optimizer', type=str, default='adam',
 
 # environment setting
 parser.add_argument('-n_vertices', type=int, default=10)
-parser.add_argument('-n_edges', type=int, default=45)
+parser.add_argument('-n_edges', type=int, default=60)
 parser.add_argument('-n_actions', type=int, default=10)
+
+parser.add_argument('-load_paths', type=str, default='')
 
 args = parser.parse_args()
 
-abstract = '{}_{}_{}_lr{}{}hid{}_bs{}_ep{}_grad{}_vf{}_ent{}_seed{}'.format(
-    args.model,
+abstract = '{}_{}_{}_{}_lr{}{}hid{}_bs{}_ep{}_grad{}_vf{}_ent{}_seed{}'.format(
+    args.d_model,
+    args.a_model,
     args.activation,
     args.optimizer,
     args.lr,
@@ -47,6 +53,7 @@ abstract = '{}_{}_{}_lr{}{}hid{}_bs{}_ep{}_grad{}_vf{}_ent{}_seed{}'.format(
     args.ent_coef,
     args.seed,
 )
+
 
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"

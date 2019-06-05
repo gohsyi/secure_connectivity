@@ -122,4 +122,4 @@ def sample_k(logits, k):
     noise = tf.random_uniform(tf.shape(logits))
     _, indices = tf.nn.top_k(logits - tf.log(-tf.log(noise)), k=k)
 
-    return tf.reduce_sum(tf.one_hot(indices, act_size), 1)
+    return tf.reduce_sum(tf.one_hot(indices, act_size, dtype=tf.int32), 1)

@@ -20,8 +20,6 @@ class Runner(object):
         self.a_model = a_model
         self.obs = env.reset()
         self.nsteps = nsteps
-        self.dones = [False]
-
         self.gamma = gamma
 
     def run(self):
@@ -55,16 +53,12 @@ class Runner(object):
             mb_a_actions.append(a_actions)
             mb_d_values.append(d_values)
             mb_a_values.append(a_values)
-            mb_dones.append(self.dones)
 
             # Take actions in env and look the results
             actions = (d_actions, a_actions)
             obs, rewards, dones, infos = self.env.step(actions)
-            self.dones = dones
             self.obs = obs
             mb_d_rewards.append(rewards)
-
-        mb_dones.append(self.dones)
 
         # Batch of steps to batch of rollouts
         mb_obs = np.asarray(mb_obs, dtype=np.float32)
