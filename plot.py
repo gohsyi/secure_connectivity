@@ -55,10 +55,16 @@ for root, dirs, files in os.walk('logs'):
                     save_path='.'.join(p.split('.')[:-1]) + '_ent_loss.jpg',
                 )
 
-            if len(rew) > 0 and len(val) > 0:
+            if len(rew) > 0:
                 plt.plot(
-                    [rew, val],
-                    label=['reward', 'value'],
-                    title='reward and value',
-                    save_path='.'.join(p.split('.')[:-1]) + '_rew_val.jpg',
+                    rew,
+                    title='reward',
+                    save_path='.'.join(p.split('.')[:-1]) + '_rew.jpg',
+                )
+
+            if len(val) > 0:
+                plt.plot(
+                    val,
+                    title='value',
+                    save_path='.'.join(p.split('.')[:-1]) + '_val.jpg',
                 )
