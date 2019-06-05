@@ -54,6 +54,7 @@ abstract = '{}_{}_{}_{}_lr{}{}hid{}_bs{}_ep{}_grad{}_vf{}_ent{}_seed{}'.format(
     args.seed,
 )
 
+args.latents = list(map(int, args.latents.split(',')))
 
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
