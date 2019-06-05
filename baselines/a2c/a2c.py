@@ -49,6 +49,7 @@ class Model(object):
         # output to both file and console
         logger = get_logger(name)
         output = logger.info
+        output(args)
 
         activation = tf_util.get_activation(activation)
         optimizer = tf_util.get_optimizer(optimizer)
