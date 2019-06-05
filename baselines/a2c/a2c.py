@@ -126,8 +126,8 @@ class Model(object):
             advs = rewards - values
 
             td_map = {X:obs, A:actions, ADV:advs, R:rewards}
-            policy_loss, value_loss, policy_entropy, cur_lr, _ = sess.run(
-                [pg_loss, vf_loss, entropy, lr, _train],
+            policy_loss, value_loss, policy_entropy, _ = sess.run(
+                [pg_loss, vf_loss, entropy, _train],
                 td_map
             )
 
@@ -136,8 +136,8 @@ class Model(object):
                 avg_values = float(np.mean(values))
                 avg_advs = float(np.mean(advs))
 
-                output(f'ep:%i\tlr:%f\t' % (ep, cur_lr) +
-                       f'pg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\t' % (policy_loss, value_loss, policy_entropy) +
+                output(f'ep:{ep}\tpg_loss:%.3f' %  policy_loss +
+                       f'vf_loss:%.3f\tent_loss:%.3f\t' % (value_loss, policy_entropy) +
                        f'avg_rew:%.2f\tavg_val:%.2f\tavg_adv:%.2f\t' % (avg_rewards, avg_values, avg_advs))
 
             return policy_loss, value_loss, policy_entropy
