@@ -5,7 +5,7 @@ from common.plot import SmoothPlot
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('-smooth_rate', type=float, default=0.6)
+parser.add_argument('-smooth_rate', type=float, default=0.9)
 
 args = parser.parse_args()
 
