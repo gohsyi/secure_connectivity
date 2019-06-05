@@ -85,12 +85,12 @@ class Model(object):
         # Total loss = Policy gradient loss - entropy * entropy coefficient + Value coefficient * value loss
 
         # Policy loss
-        neglogpac = policy.neglogp
+        neglogpac = policy.neglogp(A)
         # L = A(s,a) * -logpi(a|s)
         pg_loss = tf.reduce_mean(ADV * neglogpac)
 
         # Entropy is used to improve exploration by limiting the premature convergence to suboptimal policy.
-        entropy = tf.reduce_mean(policy.entropy)
+        entropy = tf.reduce_mean(policy.entropy())
 
         # Value loss
         vf_loss = losses.mean_squared_error(tf.squeeze(policy.vf), R)

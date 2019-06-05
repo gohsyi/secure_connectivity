@@ -26,10 +26,10 @@ class Policy(object):
         vf_latent = layers.mlp(observations, vf_latents, activation)
         vf = tf.squeeze(layers.dense(vf_latent, 1, activation), -1)
 
-        def neglogp():
+        def neglogp(labels):
             return tf.nn.softmax_cross_entropy_with_logits_v2(
-                logits=tf.clip_by_value(logits, tf.constant(-1e4), tf.constant(1e4)),
-                labels=tf.stop_gradient(action)
+                logits=logits,
+                labels=labels
             )
 
         def entropy():
@@ -43,8 +43,8 @@ class Policy(object):
         self.pi = pi
         self.vf = vf
         self.action = action
-        self.neglogp = neglogp()
-        self.entropy = entropy()
+        self.neglogp = neglogp
+        self.entropy = entropy
 
 
 def build_policy(observations, act_size, n_actions, latents, vf_latents, activation=None):
