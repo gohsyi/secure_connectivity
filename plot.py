@@ -70,3 +70,11 @@ for root, dirs, files in os.walk('logs'):
                     title='value',
                     save_path='.'.join(p.split('.')[:-1]) + '_val.jpg',
                 )
+
+            if len(rew) > 0 and len(val) > 0:
+                plt.plot(
+                    [val, rew],
+                    label=['value', 'reward'],
+                    title='performance',
+                    save_path='.'.join(p.split('.')[:-1]) + '_rew_val.jpg',
+                )
