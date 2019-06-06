@@ -35,7 +35,8 @@ parser.add_argument('-n_edges', type=int, default=16)
 parser.add_argument('-n_actions', type=int, default=2)
 
 parser.add_argument('-note', type=str, default='test')
-parser.add_argument('-load_paths', type=str, default='')
+parser.add_argument('-d_load', type=str, default=None)
+parser.add_argument('-a_load', type=str, default=None)
 
 args = parser.parse_args()
 

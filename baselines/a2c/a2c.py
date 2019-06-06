@@ -108,6 +108,9 @@ class Model(object):
 
         _train = trainer.apply_gradients(grads)
 
+        # Add ops to save and restore all the variables.
+        saver = tf.train.Saver()
+
         def step(obs):
             action, value = sess.run([policy.action, policy.vf], feed_dict={
                 X: np.reshape(obs, (-1, ob_size))
@@ -132,13 +135,21 @@ class Model(object):
 
             return policy_loss, value_loss, policy_entropy
 
+        def save(save_path):
+            saver.save(sess, save_path)
+            print(f'Model saved to {save_path}')
+
+        def load(load_path):
+            saver.restore(sess, load_path)
+            print(f'Model restored from {load_path}')
 
         self.train = train
         self.step = step
         self.value = value
         self.output = output
-        self.save = functools.partial(tf_util.save_variables, sess=sess)
-        self.load = functools.partial(tf_util.load_variables, sess=sess)
+        self.save = save
+        self.load = load
+
         tf.global_variables_initializer().run(session=sess)
 
 
@@ -151,10 +162,12 @@ def learn(env,
           vf_coef=0.5,
           ent_coef=0.01,
           max_grad_norm=0.5,
-          lr=7e-4,
+          lr=1e-4,
           gamma=0.99,
-          log_interval=1,
-          load_paths=None):
+          d_load_path=None,
+          a_load_path=None,
+          d_save_path=None,
+          a_save_path=None):
 
     set_global_seeds(seed)
 
@@ -173,13 +186,10 @@ def learn(env,
             vf_coef=vf_coef,
             ent_coef=ent_coef,
             max_grad_norm=max_grad_norm)
-
     elif defender == 'stochastic':
         d_model = Stochastic(env)
-
     elif defender == 'rule':
         d_model = Rule(env)
-
     else:
         raise NotImplementedError
 
@@ -194,19 +204,17 @@ def learn(env,
             vf_coef=vf_coef,
             ent_coef=ent_coef,
             max_grad_norm=max_grad_norm)
-
     elif attacker == 'stochastic':
         a_model = Stochastic(env)
-
     elif attacker == 'rule':
         a_model = Rule(env)
-
     else:
         raise NotImplementedError
 
-    # if load_paths is not None:
-    #     d_model.load(load_paths[0])
-    #     a_model.load(load_paths[1])
+    if d_load_path:
+        d_model.load(d_load_path)
+    if a_load_path:
+        a_model.load(a_load_path)
 
     # Instantiate the runner object
     runner = Runner(
@@ -227,22 +235,25 @@ def learn(env,
         d_values, a_values = values
         bl_d_rewards, bl_a_rewards = epinfos
 
-        # train defender model
-        train_results = d_model.train(obs, d_rewards, d_actions, d_values)
-        if defender == 'a2c' and ep % log_interval == 0:
+        # train defender model if the model is not loaded
+        if defender == 'a2c' and not d_load_path:
+            train_results = d_model.train(obs, d_rewards, d_actions, d_values)
             pg_loss, vf_loss, ent_loss = train_results
             d_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
                            f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(d_rewards)), float(np.mean(d_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_d_rewards))
 
-        # train attacker model
-        train_results = a_model.train(obs, a_rewards, a_actions, a_values)
-        if attacker == 'a2c' and ep % log_interval == 0:
+        # train attacker model if the model is not loaded
+        if attacker == 'a2c' and not a_load_path:
+            train_results = a_model.train(obs, a_rewards, a_actions, a_values)
             pg_loss, vf_loss, ent_loss = train_results
             a_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
                            f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_a_rewards))
+
+    d_model.save(d_save_path)
+    a_model.save(a_save_path)
 
     return d_model, a_model

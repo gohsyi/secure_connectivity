@@ -18,3 +18,9 @@ class Stochastic(object):
 
     def output(self, info):
         pass
+
+    def save(self, save_path):
+        pass
+
+    def load(self, load_path):
+        pass

@@ -1,7 +1,7 @@
+import os
+
 from common.argparser import args
-
-from env import build_env
-
+from env.connected import build_env
 from baselines.a2c.a2c import learn
 
 
@@ -24,8 +24,8 @@ if __name__ == '__main__':
         max_grad_norm=args.max_grad_norm,
         lr=args.lr,
         gamma=args.gamma,
-        log_interval=args.log_interval,
-        load_paths=args.load_paths,
+        d_load_path=os.path.join('logs', args.d_load, 'd_model.ckpt') if args.d_load else None,
+        a_load_path=os.path.join('logs', args.a_load, 'a_model.ckpt') if args.a_load else None,
+        d_save_path=os.path.join('logs', args.note, 'd_model.ckpt'),
+        a_save_path=os.path.join('logs', args.note, 'a_model.ckpt'),
     )
-
-
