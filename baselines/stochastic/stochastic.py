@@ -14,7 +14,7 @@ class Stochastic(object):
         return np.random.choice(self.act_size, self.n_actions), 0
 
     def train(self, obs, d_rewards, d_actions, d_values):
-        return 0, 0, 0
+        pass
 
     def output(self, info):
         pass

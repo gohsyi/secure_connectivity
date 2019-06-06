@@ -40,9 +40,7 @@ class Model(object):
             optimizer='adam',  # optimization function
             vf_coef=0.1,  # vf_loss weight
             ent_coef=0.01,  # ent_loss weight
-            max_grad_norm=0.5,  # grad normalization
-            total_epoches=int(80e6),  # total number of epoches
-            log_interval=100):  # how frequently the logs are printed out
+            max_grad_norm=0.5):  # how frequently the logs are printed out
 
         sess = tf_util.get_session()
 
@@ -226,16 +224,18 @@ def learn(env,
         bl_d_rewards, bl_a_rewards = epinfos
 
         # train defender model
-        pg_loss, vf_loss, ent_loss = d_model.train(obs, d_rewards, d_actions, d_values)
+        train_results = d_model.train(obs, d_rewards, d_actions, d_values)
         if ep % log_interval == 0:
+            pg_loss, vf_loss, ent_loss = train_results
             d_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
                            f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(d_rewards)), float(np.mean(d_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_d_rewards))
 
         # train attacker model
-        pg_loss, vf_loss, ent_loss = a_model.train(obs, a_rewards, a_actions, a_values)
+        train_results = a_model.train(obs, a_rewards, a_actions, a_values)
         if attacker != 'stochastic' and ep % log_interval == 0:
+            pg_loss, vf_loss, ent_loss = train_results
             a_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
                            f'\tavg_rew:%.2f\tavg_val:%.2f\n' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +

@@ -29,6 +29,22 @@ class Env(object):
     """
 
     def __init__(self, n, m, k):
+        """
+        Initialize the environment
+
+        Parameters
+        ----------
+        n: an integer
+            The number of vertices
+        m: an integer
+            The number of edges
+        k: an integer
+            The number of edges to be defended/attacked
+        """
+
+        assert k <= n, 'k cannot exceed n '
+        assert m <= n * (n-1), 'm cannot exceed n*(n-1)'
+
         self.num_envs = 1
         self.n = n
         self.m = m
@@ -41,8 +57,6 @@ class Env(object):
         self.n_actions = k
 
         self.max_edges = self.n * (self.n - 1)
-        self.m = min(self.m, self.max_edges)
-        self.m = max(self.m, 2*(self.n - 1))
 
         # map: int index -> (row, col)
         # self.map = np.array([(i, j) for i in range(self.n) for j in range(i)])
@@ -61,7 +75,8 @@ class Env(object):
 
         Parameters
         ----------
-        * action: a tuple, (defender's action, attacker's action)
+        action: a tuple
+            (defender's action, attacker's action)
 
         Returns
         -------
@@ -76,11 +91,13 @@ class Env(object):
 
         Parameters
         ----------
-        action: (defender_action, attacker_action), both are one-hot vectors
+        action: a tuple
+            (defender_action, attacker_action), both are one-hot vectors
 
         Returns
         -------
-        reward: (defender_reward, attacker_reward), attacker_reward equals -defender_reward
+        reward: a tuple
+            (defender_reward, attacker_reward), attacker_reward equals -defender_reward
         """
 
         pre_connections = self.connections(self.adj_mat)
@@ -178,4 +195,5 @@ def build_env(n_vertices, n_edges, n_actions):
     """
     create an Env entity
     """
+
     return Env(n=n_vertices, m=n_edges, k=n_actions)

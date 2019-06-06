@@ -17,14 +17,14 @@ for root, dirs, files in os.walk('logs'):
         if f[0] != '.' and os.path.splitext(f)[-1] == '.log':  # process .log
             p = os.path.join(root, f)
             print('processing %s' % p)
-            pg_loss, vf_loss, ent_loss, rew, val = [], [], [], [], []
+            pg_loss, vf_loss, ent_loss, rew, val, bl_rew = [], [], [], [], [], []
 
             for line in open(p):
                 line = line.split()
                 for x in line:
                     x = x.split(':')
                     if x[0] == 'ep' and x[1] == '0':
-                        pg_loss, vf_loss, ent_loss, rew, val = [], [], [], [], []
+                        pg_loss, vf_loss, ent_loss, rew, val, bl_rew = [], [], [], [], [], []
                     if x[0] == 'pg_loss':
                         pg_loss.append(float(x[1]))
                     if x[0] == 'vf_loss':
@@ -35,6 +35,8 @@ for root, dirs, files in os.walk('logs'):
                         rew.append(float(x[1]))
                     if x[0] == 'avg_val':
                         val.append(float(x[1]))
+                    if x[0] == 'bl_avg_rew':
+                        bl_rew.append(float(x[1]))
 
             if len(pg_loss) > 0:
                 plt.plot(
@@ -58,8 +60,7 @@ for root, dirs, files in os.walk('logs'):
                 )
 
             if len(rew) > 0:
-                plt.plot(
-                    rew,
+                plt.plot(rew,
                     title='reward',
                     save_path='.'.join(p.split('.')[:-1]) + '_rew.jpg',
                 )
@@ -77,4 +78,12 @@ for root, dirs, files in os.walk('logs'):
                     label=['value', 'reward'],
                     title='performance',
                     save_path='.'.join(p.split('.')[:-1]) + '_rew_val.jpg',
+                )
+
+            if len(bl_rew) > 0:
+                plt.plot(
+                    [rew, bl_rew],
+                    label=['reward', 'baseline'],
+                    title='reward',
+                    save_path='.'.join(p.split('.')[:-1]) + '_rew_bl.jpg',
                 )

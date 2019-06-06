@@ -9,7 +9,7 @@ import numpy as np
 class SmoothPlot():
     def __init__(self, smooth_rate=0.9):
         self.smooth_rate = smooth_rate
-        self.colors = ['r', 'g', 'b', 'c']
+        self.colors = ['r', 'b', 'c', 'g', 'm', 'y', 'k', 'w']
 
     def plot(self, data, save_path, title=None, label=None):
         if type(data) == list and type(label) == list:
