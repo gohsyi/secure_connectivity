@@ -137,6 +137,7 @@ class Model(object):
         self.train = train
         self.step = step
         self.value = value
+        self.output = output
         self.save = functools.partial(tf_util.save_variables, sess=sess)
         self.load = functools.partial(tf_util.load_variables, sess=sess)
         tf.global_variables_initializer().run(session=sess)
@@ -227,7 +228,7 @@ def learn(env,
         # train defender model
         pg_loss, vf_loss, ent_loss = d_model.train(obs, d_rewards, d_actions, d_values)
         if ep % log_interval == 0:
-            d_model.output(f'ep:{ep}\n' +
+            d_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
                            f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(d_rewards)), float(np.mean(d_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_d_rewards))
@@ -235,9 +236,9 @@ def learn(env,
         # train attacker model
         pg_loss, vf_loss, ent_loss = a_model.train(obs, a_rewards, a_actions, a_values)
         if attacker != 'stochastic' and ep % log_interval == 0:
-            a_model.output(f'ep:{ep}\n' +
+            a_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
-                           f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
+                           f'\tavg_rew:%.2f\tavg_val:%.2f\n' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_a_rewards))
 
     return d_model, a_model
