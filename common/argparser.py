@@ -30,9 +30,9 @@ parser.add_argument('-optimizer', type=str, default='adam',
                     help='adam/adagrad/gd/rms/momentum')
 
 # environment setting
-parser.add_argument('-n_vertices', type=int, default=10)
-parser.add_argument('-n_edges', type=int, default=60)
-parser.add_argument('-n_actions', type=int, default=10)
+parser.add_argument('-n_vertices', type=int, default=5)
+parser.add_argument('-n_edges', type=int, default=16)
+parser.add_argument('-n_actions', type=int, default=2)
 
 parser.add_argument('-note', type=str, default='test')
 parser.add_argument('-load_paths', type=str, default='')

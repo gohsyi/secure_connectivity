@@ -158,7 +158,7 @@ def learn(env,
     set_global_seeds(seed)
 
     from baselines.stochastic.stochastic import Stochastic
-    from baselines.rule.rule import Rule
+    from baselines.stochastic.rule import Rule
 
     # Instantiate the model objects (that creates defender_model and adversary_model)
     if defender == 'a2c':
