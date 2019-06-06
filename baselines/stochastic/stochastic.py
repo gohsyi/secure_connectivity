@@ -7,8 +7,7 @@ class Stochastic(object):
     """
 
     def __init__(self, env):
-        # self.act_size = env.act_size
-        self.act_size = env.n
+        self.act_size = env.act_size
         self.n_actions = env.n_actions
 
     def step(self, obs):

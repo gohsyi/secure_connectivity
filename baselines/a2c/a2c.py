@@ -158,6 +158,7 @@ def learn(env,
     set_global_seeds(seed)
 
     from baselines.stochastic.stochastic import Stochastic
+    from baselines.rule.rule import Rule
 
     # Instantiate the model objects (that creates defender_model and adversary_model)
     if defender == 'a2c':
@@ -174,6 +175,9 @@ def learn(env,
 
     elif defender == 'stochastic':
         d_model = Stochastic(env)
+
+    elif defender == 'rule':
+        d_model = Rule(env)
 
     else:
         raise NotImplementedError
@@ -193,6 +197,9 @@ def learn(env,
     elif attacker == 'stochastic':
         a_model = Stochastic(env)
 
+    elif attacker == 'rule':
+        a_model = Rule(env)
+
     else:
         raise NotImplementedError
 
@@ -205,8 +212,8 @@ def learn(env,
         env=env,
         d_model=d_model,
         a_model=a_model,
-        bl_d_model=Stochastic(env),
-        bl_a_model=Stochastic(env),
+        bl_d_model=Rule(env),
+        bl_a_model=Rule(env),
         nsteps=nsteps,
         gamma=gamma
     )
