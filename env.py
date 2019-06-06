@@ -104,12 +104,23 @@ class Env(object):
         adj_mat = self.adj_mat.copy()
 
         d_action, a_action = action
-        d_action = np.argwhere(d_action == 1)
-        a_action = np.argwhere(a_action == 1)
+
+        assert d_action.shape[0] == self.act_size or d_action.shape[0] == self.n_actions
+        assert a_action.shape[0] == self.act_size or a_action.shape[0] == self.n_actions
+
+        if d_action.shape[0] == self.act_size:
+            d_action = list(map(int, np.argwhere(d_action == 1)))
+        else:
+            d_action = d_action.tolist()
+
+        if a_action.shape[0] == self.act_size:
+            a_action = list(map(int, np.argwhere(a_action == 1)))
+        else:
+            a_action = a_action.tolist()
 
         for aa in a_action:
             if aa not in d_action:
-                i, j = self.map[int(aa)]
+                i, j = self.map[aa]
                 adj_mat[i][j] = 0
 
         # defender_rew = 1 if self.is_connected() else -1

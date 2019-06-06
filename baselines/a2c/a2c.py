@@ -109,9 +109,10 @@ class Model(object):
         _train = trainer.apply_gradients(grads)
 
         def step(obs):
-            return sess.run([policy.action, policy.vf], feed_dict={
+            action, value = sess.run([policy.action, policy.vf], feed_dict={
                 X: np.reshape(obs, (-1, ob_size))
             })
+            return action, value
 
         def value(obs):
             return sess.run(policy.vf, feed_dict={
