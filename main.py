@@ -1,7 +1,7 @@
 import os
 
 from common.argparser import args
-from env.connected import build_env
+from env import build_env
 from baselines.a2c.a2c import learn
 
 
