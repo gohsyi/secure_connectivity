@@ -170,9 +170,7 @@ def learn(env,
             optimizer=args.optimizer,
             vf_coef=vf_coef,
             ent_coef=ent_coef,
-            max_grad_norm=max_grad_norm,
-            total_epoches=total_epoches,
-            log_interval=log_interval)
+            max_grad_norm=max_grad_norm)
 
     elif defender == 'stochastic':
         d_model = Stochastic(env)
@@ -190,9 +188,7 @@ def learn(env,
             optimizer=args.optimizer,
             vf_coef=vf_coef,
             ent_coef=ent_coef,
-            max_grad_norm=max_grad_norm,
-            total_epoches=total_epoches,
-            log_interval=log_interval)
+            max_grad_norm=max_grad_norm)
 
     elif attacker == 'stochastic':
         a_model = Stochastic(env)
