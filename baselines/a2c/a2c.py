@@ -109,7 +109,7 @@ class Model(object):
         _train = trainer.apply_gradients(grads)
 
         # Add ops to save and restore all the variables.
-        saver = tf.train.Saver()
+        saver = tf.train.Saver(tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=name))
 
         def step(obs):
             action, value = sess.run([policy.action, policy.vf], feed_dict={

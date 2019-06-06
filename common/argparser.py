@@ -17,14 +17,14 @@ parser.add_argument('-a_model', type=str, default='a2c')
 parser.add_argument('-lr', type=float, default=1e-4)
 parser.add_argument('-lr_decay', action='store_true', default=False)
 parser.add_argument('-batchsize', type=int, default=64)
-parser.add_argument('-latents', type=str, default='256')
-parser.add_argument('-total_epoches', type=int, default=int(1e5))
+parser.add_argument('-latents', type=str, default='64')
+parser.add_argument('-total_epoches', type=int, default=int(2e4))
 parser.add_argument('-vf_coef', type=float, default=0.1)
 parser.add_argument('-ent_coef', type=float, default=0.01)
 parser.add_argument('-gamma', type=float, default=0.99)
 parser.add_argument('-log_interval', type=int, default=10)
 parser.add_argument('-max_grad_norm', type=float, default=0.5)
-parser.add_argument('-activation', type=str, default='relu',
+parser.add_argument('-activation', type=str, default='tanh',
                     help='relu/sigmoid/elu/tanh')
 parser.add_argument('-optimizer', type=str, default='adam',
                     help='adam/adagrad/gd/rms/momentum')
