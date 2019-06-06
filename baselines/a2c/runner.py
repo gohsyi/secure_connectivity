@@ -14,10 +14,13 @@ class Runner(object):
     - Make a mini batch of experiences
     """
 
-    def __init__(self, env, d_model, a_model, nsteps=5, gamma=0.99):
-        self.env = env
+    def __init__(self, env, d_model, a_model, bl_d_model, bl_a_model, nsteps=5, gamma=0.99):
         self.d_model = d_model
         self.a_model = a_model
+        self.bl_d_model = bl_d_model
+        self.bl_a_model = bl_a_model
+
+        self.env = env
         self.obs = env.reset()
         self.nsteps = nsteps
         self.gamma = gamma
@@ -25,27 +28,45 @@ class Runner(object):
     def run(self):
         """
         Make a mini batch of experiences
-        :return:
-            mb_obs: (batch_size x ob_size), observations of both defender and attacker
-            (mb_d_rewards, mb_a_rewards): (batch_size x 1, batch_size x 1), rewards of attacker
-            (mb_d_actions, mb_a_actions): (batch_size x 1, batch_size x 1), actions of attacker
-            (mb_d_values, mb_a_values): (batch_size x 1, batch_size x 1), estimated value of attacker
-            epinfos: other infos (useless for now)
+
+        Returns
+        -------
+        mb_obs:
+            (batch_size x ob_size), observations of both defender and attacker
+
+        (mb_d_rewards, mb_a_rewards):
+            (batch_size x 1, batch_size x 1), rewards of attacker
+
+        (mb_d_actions, mb_a_actions):
+            (batch_size x 1, batch_size x 1), actions of attacker
+
+        (mb_d_values, mb_a_values):
+            (batch_size x 1, batch_size x 1), estimated value of attacker
+
+        epinfos:
+            other infos (useless for now)
         """
 
         # We initialize the lists that will contain the mb of experiences
-        mb_obs, mb_d_rewards, mb_dones = [],[],[]
-        mb_d_actions, mb_a_actions, mb_d_values, mb_a_values = [],[],[],[]
-        epinfos = []
+        mb_obs, mb_dones = [],[]
+        mb_d_rewards, mb_a_rewards, mb_bl_d_rewards, mb_bl_a_rewards = [],[],[],[]
+        mb_d_actions, mb_a_actions, mb_bl_d_actions, mb_bl_a_actions = [],[],[],[]
+        mb_d_values, mb_a_values, mb_bl_d_values, mb_bl_a_values = [],[],[],[]
+
         for n in range(self.nsteps):
             # Given observations, take action and value (V(s))
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
             d_actions, d_values = self.d_model.step(self.obs)
             a_actions, a_values = self.a_model.step(self.obs)
+            bl_d_actions, _ = self.bl_d_model.step(self.obs)
+            bl_a_actions, _ = self.bl_a_model.step(self.obs)
+
             d_actions = np.squeeze(d_actions)
             a_actions = np.squeeze(a_actions)
             d_values = np.squeeze(d_values)
             a_values = np.squeeze(a_values)
+            bl_d_actions = np.squeeze(bl_d_actions)
+            bl_a_actions = np.squeeze(bl_a_actions)
 
             # Append the experiences
             mb_obs.append(np.copy(self.obs))
@@ -53,22 +74,22 @@ class Runner(object):
             mb_a_actions.append(a_actions)
             mb_d_values.append(d_values)
             mb_a_values.append(a_values)
+            mb_bl_d_actions.append(d_actions)
+            mb_bl_a_actions.append(a_actions)
+            mb_bl_d_values.append(d_values)
+            mb_bl_a_values.append(a_values)
 
             # Take actions in env and look the results
-            actions = (d_actions, a_actions)
-            obs, rewards, dones, infos = self.env.step(actions)
-            self.obs = obs
-            mb_d_rewards.append(rewards)
+            bl_d_rewards, a_rewards = self.env.eval((bl_d_actions, a_actions))
+            d_rewards, bl_a_rewards = self.env.eval((d_actions, bl_a_actions))
+            d_rewards, a_rewards = self.env.eval((d_actions, a_actions))
 
-        # Batch of steps to batch of rollouts
-        mb_obs = np.asarray(mb_obs, dtype=np.float32)
-        mb_d_rewards = np.asarray(mb_d_rewards, dtype=np.float32)
-        mb_a_rewards = -mb_d_rewards
-        mb_d_actions = np.asarray(mb_d_actions, dtype=np.int32)
-        mb_a_actions = np.asarray(mb_a_actions, dtype=np.int32)
-        mb_d_values = np.asarray(mb_d_values, dtype=np.float32)
-        mb_a_values = np.asarray(mb_a_values, dtype=np.float32)
-        mb_dones = np.asarray(mb_dones, dtype=np.bool)
+            obs, rewards, dones, infos = self.env.step((d_actions, a_actions))
+            self.obs = obs
+            mb_d_rewards.append(d_rewards)
+            mb_a_rewards.append(a_rewards)
+            mb_bl_d_rewards.append(bl_d_rewards)
+            mb_bl_a_rewards.append(bl_a_rewards)
 
         # TODO add bootstrap
         # if self.gamma > 0.0:
@@ -96,8 +117,8 @@ class Runner(object):
         #
         #         mb_a_rewards[n] = rewards
 
-        return mb_obs, \
-               (mb_d_rewards, mb_a_rewards), \
-               (mb_d_actions, mb_a_actions), \
-               (mb_d_values, mb_a_values), \
-               epinfos
+        return np.array(mb_obs), \
+               (np.array(mb_d_rewards), np.array(mb_a_rewards)), \
+               (np.array(mb_d_actions), np.array(mb_a_actions)), \
+               (np.array(mb_d_values), np.array(mb_a_values)), \
+               (np.array(mb_bl_d_rewards), np.array(mb_bl_a_rewards))

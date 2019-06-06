@@ -13,5 +13,8 @@ class Stochastic(object):
     def step(self, obs):
         return np.random.choice(self.act_size, self.n_actions), 0
 
-    def train(self, ep, obs, d_rewards, d_actions, d_values):
+    def train(self, obs, d_rewards, d_actions, d_values):
+        pass
+
+    def output(self, info):
         pass

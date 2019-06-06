@@ -58,41 +58,61 @@ class Env(object):
     def step(self, action):
         """
         take a step
-        ------
-        :param action: a tuple, (defender's action, attacker's action)
-        :return: tuple, (new_observation, reward)
+
+        Parameters
+        ----------
+        * action: a tuple, (defender's action, attacker's action)
+
+        Returns
+        -------
+        a tuple: (new_observation, reward, done, info)
         """
 
-        pre_connections = self.connections()
+        return self.gen_connected_graph(), self.eval(action)[0], True, None
+
+    def eval(self, action):
+        """
+        evaluate the reward of the actions
+
+        Parameters
+        ----------
+        action: (defender_action, attacker_action), both are one-hot vectors
+
+        Returns
+        -------
+        reward: (defender_reward, attacker_reward), attacker_reward equals -defender_reward
+        """
+
+        pre_connections = self.connections(self.adj_mat)
+        adj_mat = self.adj_mat.copy()
 
         d_action, a_action = action
-        d_action = np.argwhere(d_action==1)
-        a_action = np.argwhere(a_action==1)
+        d_action = np.argwhere(d_action == 1)
+        a_action = np.argwhere(a_action == 1)
 
         for aa in a_action:
             if aa not in d_action:
                 i, j = self.map[int(aa)]
-                self.adj_mat[i][j] = 0
+                adj_mat[i][j] = 0
 
         # defender_rew = 1 if self.is_connected() else -1
-        defender_rew = (self.connections() - pre_connections) / (self.n - 1)  # normalize -> [-1, 0]
-
-        return self.gen_connected_graph(), defender_rew, True, None
+        defender_rew = (self.connections(adj_mat) - pre_connections) / (self.n-1)  # normalize -> [-1, 0]
+        return defender_rew, -defender_rew
 
     def gen_connected_graph(self):
         """
         generate a connected graph with `self.n` vertices and `self.m` edges
-        ------
-        :return: the adjacent matrix of the generated graph
+
+        Returns
+        -------
+        the adjacent matrix of the generated graph
         """
 
         while True:
             self.adj_mat = np.eye(self.n)
             edges = np.random.choice(self.max_edges, self.m)
-
             for i, j in self.map[edges]:
                 self.adj_mat[i, j] = 1
-
             if self.is_connected():
                 break
 
@@ -101,16 +121,16 @@ class Env(object):
     def gen_graph(self):
         """
         generate a graph with `self.n` vertices and `self.m` edges
-        ------
-        :return: the adjacent matrix of the generated graph
+
+        Returns
+        -------
+        the adjacent matrix of the generated graph
         """
 
         self.adj_mat = np.eye(self.n)
         edges = np.random.choice(self.max_edges, self.m)
-
         for i, j in self.map[edges]:
             self.adj_mat[i, j] = 1
-
         return np.reshape(self.adj_mat, -1)
 
     def is_connected(self):
@@ -133,7 +153,7 @@ class Env(object):
 
         return vis.count(False) == 0  # if all vertices are visited, return True
 
-    def connections(self):
+    def connections(self, adj_mat):
         """
         count the number of vertices that `s` is directly or indirectly connected to
         """
@@ -146,7 +166,7 @@ class Env(object):
 
         while not Q.empty():
             u = Q.get()
-            for v, e in enumerate(self.adj_mat[u]):
+            for v, e in enumerate(adj_mat[u]):
                 if e == 1 and not vis[v]:
                     vis[v] = True
                     Q.put(v)
@@ -155,4 +175,7 @@ class Env(object):
 
 
 def build_env(n_vertices, n_edges, n_actions):
+    """
+    create an Env entity
+    """
     return Env(n=n_vertices, m=n_edges, k=n_actions)

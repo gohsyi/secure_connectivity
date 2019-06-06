@@ -120,7 +120,7 @@ class Model(object):
                 X: np.reshape(obs, (-1, ob_size))
             })
 
-        def train(ep, obs, rewards, actions, values):
+        def train(obs, rewards, actions, values):
             # Here we calculate advantage A(s,a) = R + yV(s') - V(s)
             # rewards = R + yV(s')
             advs = rewards - values
@@ -130,15 +130,6 @@ class Model(object):
                 [pg_loss, vf_loss, entropy, _train],
                 td_map
             )
-
-            if ep % log_interval == 0:
-                avg_rewards = float(np.mean(rewards))
-                avg_values = float(np.mean(values))
-                avg_advs = float(np.mean(advs))
-
-                output(f'ep:{ep}\tpg_loss:%.3f' %  policy_loss +
-                       f'vf_loss:%.3f\tent_loss:%.3f\t' % (value_loss, policy_entropy) +
-                       f'avg_rew:%.2f\tavg_val:%.2f\tavg_adv:%.2f\t' % (avg_rewards, avg_values, avg_advs))
 
             return policy_loss, value_loss, policy_entropy
 
@@ -215,7 +206,15 @@ def learn(env,
     #     a_model.load(load_paths[1])
 
     # Instantiate the runner object
-    runner = Runner(env, d_model, a_model, nsteps=nsteps, gamma=gamma)
+    runner = Runner(
+        env=env,
+        d_model=d_model,
+        a_model=a_model,
+        bl_d_model=Stochastic(env),
+        bl_a_model=Stochastic(env),
+        nsteps=nsteps,
+        gamma=gamma
+    )
 
     for ep in range(total_epoches):
         # Get mini batch of experiences
@@ -223,8 +222,22 @@ def learn(env,
         d_rewards, a_rewards = rewards
         d_actions, a_actions = actions
         d_values, a_values = values
+        bl_d_rewards, bl_a_rewards = epinfos
 
-        d_model.train(ep, obs, d_rewards, d_actions, d_values)
-        a_model.train(ep, obs, a_rewards, a_actions, a_values)
+        # train defender model
+        pg_loss, vf_loss, ent_loss = d_model.train(obs, d_rewards, d_actions, d_values)
+        if ep % log_interval == 0:
+            d_model.output(f'ep:{ep}\n' +
+                           f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
+                           f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(d_rewards)), float(np.mean(d_values))) +
+                           f'\tbl_avg_rew:%.2f\t' % np.mean(bl_d_rewards))
+
+        # train attacker model
+        pg_loss, vf_loss, ent_loss = a_model.train(obs, a_rewards, a_actions, a_values)
+        if attacker != 'stochastic' and ep % log_interval == 0:
+            a_model.output(f'ep:{ep}\n' +
+                           f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
+                           f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
+                           f'\tbl_avg_rew:%.2f\t' % np.mean(bl_a_rewards))
 
     return d_model, a_model
