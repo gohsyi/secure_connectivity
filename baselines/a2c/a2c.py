@@ -221,7 +221,7 @@ def learn(env,
 
         # train defender model
         train_results = d_model.train(obs, d_rewards, d_actions, d_values)
-        if ep % log_interval == 0:
+        if defender != 'stochastic' and ep % log_interval == 0:
             pg_loss, vf_loss, ent_loss = train_results
             d_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
