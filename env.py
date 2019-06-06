@@ -42,8 +42,8 @@ class Env(object):
             The number of edges to be defended/attacked
         """
 
-        assert k <= n, 'k cannot exceed n '
-        assert m <= n * (n-1), 'm cannot exceed n*(n-1)'
+        assert k < n, 'k cannot exceed n '
+        assert m < n * (n-1), 'm cannot exceed n*(n-1)'
 
         self.num_envs = 1
         self.n = n
