@@ -229,7 +229,7 @@ def learn(env,
 
         # train defender model
         train_results = d_model.train(obs, d_rewards, d_actions, d_values)
-        if defender != 'stochastic' and ep % log_interval == 0:
+        if defender == 'a2c' and ep % log_interval == 0:
             pg_loss, vf_loss, ent_loss = train_results
             d_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
@@ -238,11 +238,11 @@ def learn(env,
 
         # train attacker model
         train_results = a_model.train(obs, a_rewards, a_actions, a_values)
-        if attacker != 'stochastic' and ep % log_interval == 0:
+        if attacker == 'a2c' and ep % log_interval == 0:
             pg_loss, vf_loss, ent_loss = train_results
             a_model.output(f'\n\tep:{ep}\n' +
                            f'\tpg_loss:%.3f\tvf_loss:%.3f\tent_loss:%.3f\n' % (pg_loss, vf_loss, ent_loss) +
-                           f'\tavg_rew:%.2f\tavg_val:%.2f\n' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
+                           f'\tavg_rew:%.2f\tavg_val:%.2f' % (float(np.mean(a_rewards)), float(np.mean(a_values))) +
                            f'\tbl_avg_rew:%.2f\t' % np.mean(bl_a_rewards))
 
     return d_model, a_model
