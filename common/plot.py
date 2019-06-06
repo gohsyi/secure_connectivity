@@ -15,10 +15,10 @@ class SmoothPlot():
         if type(data) == list and type(label) == list:
             for d, l, c in zip(data, label, self.colors):
                 plt.plot(d, c=c, alpha=0.2, linewidth=1.0)
-                plt.plot(self.smooth_momentum(d), label=l, c=c, linewidth=0.8)
+                plt.plot(self.smooth_momentum(d), label=l, c=c, linewidth=0.5)
         else:
             plt.plot(data, c='r', alpha=0.2, linewidth=1.0)
-            plt.plot(self.smooth_momentum(data), label=label, c='r', linewidth=0.8)
+            plt.plot(self.smooth_momentum(data), label=label, c='r', linewidth=0.5)
 
         if title:
             plt.title(title)
