@@ -7,18 +7,19 @@ import numpy as np
 
 
 class SmoothPlot():
-    def __init__(self, smooth_rate=0.9):
+    def __init__(self, smooth_rate=0.9, linewidth=1.0):
         self.smooth_rate = smooth_rate
+        self.linewidth = linewidth
         self.colors = ['r', 'b', 'c', 'g', 'm', 'y', 'k', 'w']
 
     def plot(self, data, save_path, title=None, label=None):
         if type(data) == list and type(label) == list:
             for d, l, c in zip(data, label, self.colors):
                 plt.plot(d, c=c, alpha=0.2, linewidth=1.0)
-                plt.plot(self.smooth_momentum(d), label=l, c=c, linewidth=0.5)
+                plt.plot(self.smooth_momentum(d), label=l, c=c, linewidth=self.linewidth)
         else:
             plt.plot(data, c='r', alpha=0.2, linewidth=1.0)
-            plt.plot(self.smooth_momentum(data), label=label, c='r', linewidth=0.5)
+            plt.plot(self.smooth_momentum(data), label=label, c='r', linewidth=self.linewidth)
 
         if title:
             plt.title(title)

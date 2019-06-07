@@ -3,13 +3,13 @@ import argparse
 
 from common.plot import SmoothPlot
 
+
 parser = argparse.ArgumentParser()
-
 parser.add_argument('-smooth_rate', type=float, default=0.9)
-
+parser.add_argument('-line_width', type=float, default=0.5)
 args = parser.parse_args()
 
-plt = SmoothPlot(args.smooth_rate)
+plt = SmoothPlot(args.smooth_rate, args.line_width)
 
 
 for root, dirs, files in os.walk('logs'):
