@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from baselines.common import layers, sample_k
+from models.common import layers, sample_k
 
 
 class Policy(object):

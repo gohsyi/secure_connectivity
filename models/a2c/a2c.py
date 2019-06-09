@@ -1,4 +1,3 @@
-import functools
 import numpy as np
 import tensorflow as tf
 
@@ -8,12 +7,12 @@ from tensorflow import losses
 from common.argparser import args
 from common.util import get_logger
 
-from baselines.common import tf_util
-from baselines.common import set_global_seeds
+from models.common import tf_util
+from models.common import set_global_seeds
 
-from baselines.a2c.policy import build_policy
-from baselines.a2c.utils import find_trainable_variables
-from baselines.a2c.runner import Runner
+from models.a2c.policy import build_policy
+from models.a2c.utils import find_trainable_variables
+from models.a2c.runner import Runner
 
 
 class Model(object):
@@ -171,8 +170,8 @@ def learn(env,
 
     set_global_seeds(seed)
 
-    from baselines.stochastic.stochastic import Stochastic
-    from baselines.stochastic.rule import Rule
+    from models.stochastic.stochastic import Stochastic
+    from rule.rule import Rule
 
     # Instantiate the model objects (that creates defender_model and adversary_model)
     if defender == 'a2c':

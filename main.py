@@ -2,7 +2,7 @@ import os
 
 from common.argparser import args
 from env import build_env
-from baselines.a2c.a2c import learn
+from models.a2c.a2c import learn
 
 
 if __name__ == '__main__':

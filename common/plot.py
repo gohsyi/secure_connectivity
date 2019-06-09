@@ -7,7 +7,7 @@ import numpy as np
 
 
 class SmoothPlot():
-    def __init__(self, smooth_rate=0.9, linewidth=1.0):
+    def __init__(self, smooth_rate=0, linewidth=1.0):
         self.smooth_rate = smooth_rate
         self.linewidth = linewidth
         self.colors = ['r', 'b', 'c', 'g', 'm', 'y', 'k', 'w']
@@ -20,6 +20,8 @@ class SmoothPlot():
         else:
             plt.plot(data, c='r', alpha=0.2, linewidth=1.0)
             plt.plot(self.smooth_momentum(data), label=label, c='r', linewidth=self.linewidth)
+
+        plt.xlabel('epoches')
 
         if title:
             plt.title(title)
