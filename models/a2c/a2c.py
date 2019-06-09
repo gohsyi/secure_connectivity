@@ -171,7 +171,7 @@ def learn(env,
     set_global_seeds(seed)
 
     from models.stochastic.stochastic import Stochastic
-    from rule.rule import Rule
+    from rule.rule2 import Rule
 
     # Instantiate the model objects (that creates defender_model and adversary_model)
     if defender == 'a2c':
