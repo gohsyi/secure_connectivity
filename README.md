@@ -23,7 +23,7 @@ Please refer to `common/argparser.py` for more available arguments.
 
 The description of the problem is illustrated as below.
 
-<img src="https://github.com/gohsyi/secure_connectivity/blob/master/figures/description.png" width="450" height="350" />
+<img src="https://github.com/gohsyi/secure_connectivity/blob/master/figures/description.png" width="650" height="500" />
 
 
 ## Framework & Models
@@ -32,7 +32,7 @@ We propose a framework based on reinforcement learning to build a strong defende
 
 To test the efficiency of our method, we implement another two methods for comparison. One is called rule-based method, where the attacker and the defender generate actions according to a certain strategy. The other is called stochastic method, where the two models select the edges randomly. We set a series of experiments to compare the ability of the above methods, and find that the RL-based method performs better than the others in both attacking and defending.
 
-<img src="https://github.com/gohsyi/secure_connectivity/blob/master/figures/framework.png" width="600" height="600" />
+<img src="https://github.com/gohsyi/secure_connectivity/blob/master/figures/framework.png" width="500" height="500" />
 
 
 ## Experiment
