@@ -2,6 +2,8 @@
 
 Course project of SJTU EE447: Mobile Internet, advised by Prof. Luoyi Fu and Prof. Xinbing Wang. We consider the connectivity determination of a network under the risk of adversarial models. The task is to design a defending strategy to predict and protect the edges that is most likely to be attacked by an attacker. In this project, we propose a framework based on reinforcement learning, in which we simultaneously train an attacker model and a defender model. The models generate actions against each other, which is similar to the training process of generative adversarial networks (GAN). To test the efficiency of our method, we also implement a rule-based method and a stochastic method. Experiments show that the RL-based model performs better than the other two methods.
 
+We recommend you to read our article [here](https://github.com/gohsyi/secure_connectivity/blob/master/reports/Report.pdf) before further reading.
+
 
 ## Usage
 
